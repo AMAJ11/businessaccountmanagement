@@ -1,17 +1,45 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <NavBar v-if="router !='/Auth'"/>  
+  <v-app>
+    <div v-if="router !='/Auth'" style="display: flex;justify-content: space-between;" class="px-8 py-16 pb-2 mt-6">
+      <v-chip>
+        <h2> {{ time }} </h2>
+      </v-chip>
+      <v-chip>
+        <h2> {{ date }} </h2>
+      </v-chip>
+    </div>
+    <v-main>
+      
+      <router-view />
+    </v-main>
+  </v-app>
 </template>
 
-<style lang="stylus">
-#app
-  font-family Avenir, Helvetica, Arial, sans-serif
-  -webkit-font-smoothing antialiased
-  -moz-osx-font-smoothing grayscale
-  text-align center
-  color #2c3e50
-  margin-top 60px
-</style>
+<script>
+import NavBar from './components/NavBar.vue';
+
+export default {
+  components: { NavBar },
+  created: function () {
+
+    setInterval(() => {
+      let t = new Date();
+      this.time = t.toLocaleTimeString();
+      this.date = t.toLocaleDateString();
+      
+    }, 1000);
+  },
+  data() {
+    return {
+      date: "",
+      time: "",
+    }
+  },
+  computed:{
+    router(){
+      return this.$route.path
+    }
+  }
+}
+</script>
