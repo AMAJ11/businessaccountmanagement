@@ -53,13 +53,14 @@
                         }}</span>
                     </template>
                     <template v-slot:item.time="{ item }">
-                        <v-tooltip text="Tooltip content">
+                        <v-tooltip class="hidden-sm-and-down" text="Tooltip content">
                             {{ formattedDate(item.date) + " ," }} {{ item.time }}
-                            <template #activator="{ props }">
-                                <v-icon v-bind="props">mdi-clock</v-icon>
+                            <template class="hidden-sm-and-down" #activator="{ props }">
+                                <v-icon v-bind="props" class="hidden-sm-and-down">mdi-clock</v-icon>
                             </template>
                         </v-tooltip>
-                        <span> {{ formattedDate(item.date) + " ," }} {{ item.time }}</span>
+                        <span class="hidden-md-and-up" style="font-size: 18px"> {{ formattedDate(item.date) + " ," }} {{
+                            item.time }}</span>
                     </template>
                 </v-data-table>
 
