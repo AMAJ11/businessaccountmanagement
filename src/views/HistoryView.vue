@@ -59,8 +59,8 @@
                                 <v-icon v-bind="props" class="hidden-sm-and-down">mdi-clock</v-icon>
                             </template>
                         </v-tooltip>
-                        <span class="hidden-md-and-up" style="font-size: 18px"> {{ formattedDate(item.date) + " ," }} {{
-                            item.time }}</span>
+                        <v-chip class="hidden-md-and-up" style="font-size: 15px"> {{ formattedDate(item.date) + " ," }} {{
+                            item.time }}</v-chip>
                     </template>
                 </v-data-table>
 
