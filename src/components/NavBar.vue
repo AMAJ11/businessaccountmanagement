@@ -1,7 +1,7 @@
 <template>
   <v-layout>
     <v-app-bar color="transparent" :elevation="0" style="backdrop-filter: blur(4px);">
-      <v-app-bar-title>
+      <v-app-bar-title class="hidden-xs">
         <v-avatar size="60"><v-img src="../assets/manager_icon_129392.png"></v-img></v-avatar>
       </v-app-bar-title>
       <v-spacer></v-spacer>
@@ -10,8 +10,8 @@
           :color="router == '/' ? 'primary' : ''">mdi-home-outline</v-icon>
         <v-icon @click="$router.push('/history')" style="font-size: 33px;cursor: pointer;" class="mr-6 RouteIcon2"
           :color="router == '/history' ? 'red' : ''">mdi-calendar-month</v-icon>
-        <v-icon @click="$router.push('/cash')" style="font-size: 33px;cursor: pointer;" class="mr-6 RouteIcon3"
-          :color="router == '/cash' ? 'success' : ''">mdi-cash</v-icon>
+        <v-icon @click="$router.push('/account')" style="font-size: 33px;cursor: pointer;" class="mr-6 RouteIcon3"
+          :color="router == '/account' ? 'success' : ''">mdi-account-tie</v-icon>
       </div>
       <v-spacer></v-spacer>
       <v-btn @click="logoutDialog=true" icon>
@@ -43,7 +43,6 @@ export default {
     }
   },
   created: function () {
-    console.log(this.router);
   },
   methods:{
     logout: function(){

@@ -1,7 +1,7 @@
 <template>
   <NavBar v-if="router !='/Auth'"/>  
   <v-app>
-    <div v-if="router !='/Auth'" style="display: flex;justify-content: space-between;" class="px-8 py-16 pb-2 mt-6">
+    <div v-if="router !='/Auth'" style="display: flex;justify-content: space-between;" class="px-4 px-md-8 py-16 pb-2 mt-6">
       <v-chip>
         <h2> {{ time }} </h2>
       </v-chip>
@@ -11,7 +11,7 @@
     </div>
     <v-main>
       
-      <router-view />
+      <router-view  style="width: 96%"/>
     </v-main>
   </v-app>
 </template>

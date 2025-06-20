@@ -20,7 +20,16 @@
                         placeholder="أدخل ملاحظاتك هنا" v-model="descriptionSubmit"></v-text-field>
                     <v-text-field :rules="FormRule" color="primary" rounded dir="rtl" type="number"
                         placeholder="أدخل الثمن" variant="outlined" v-model="price"></v-text-field>
-                    <v-btn color="success" type="submit">اضافة</v-btn>
+                    <div style="display: flex;justify-content: space-between;">
+                        <v-btn color="success" type="submit">اضافة</v-btn>
+                        <div style="display: flex;">
+                            <v-checkbox v-model="checkBox" :disabled="OperationSubmit != '2'"
+                                label="هل الدفع لتاجر؟"></v-checkbox>
+                            <div style="width: 200px;"><v-select @update:menu="" :disabled="!checkBox"
+                                    :items="selectMerchant" item-title="name" item-value="_id"
+                                    v-model="selectedMerchant"></v-select></div>
+                        </div>
+                    </div>
                 </v-form>
             </v-col>
             <v-spacer></v-spacer>
@@ -70,7 +79,15 @@
 
         </v-row>
 
-
+        <v-snackbar v-model="snackbarShow" :timeout="2000" color="success" bottom right>
+            <v-icon left>mdi-check</v-icon>
+            تم الدفع بنجاح
+            <template v-slot:action="{ attrs }">
+                <v-btn text v-bind="attrs" @click="snackbar = false">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+            </template>
+        </v-snackbar>
 
     </div>
 </template>
@@ -81,12 +98,14 @@ import axios from 'axios';
 export default {
     created: async function () {
         let checkDate = new Date();
-        let date = checkDate.toISOString().split('T')[0];
+        let date = `${checkDate.getFullYear()}-${checkDate.getMonth() + 1}-${checkDate.getDate()}`
+
         setInterval(() => {
             let t = new Date();
             this.time = t.toLocaleTimeString();
             this.date = t.toLocaleDateString();
         }, 1000);
+        this.dateccc = date
         let response = await axios.get(`${this.apiurl}/records?from=${date}&to=${date}`,
             {
                 headers: {
@@ -96,11 +115,21 @@ export default {
             }
 
         )
-        console.log(response);
+
         for (let i = 0; i < response.data.length; i++) {
             this.TableItems.push({ des: response.data[i].description, amount: Number(response.data[i].amount), type: response.data[i].type, time: response.data[i].time })
         }
+        let response2 = await axios.get(`${this.apiurl}/account`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authorization': `${localStorage.getItem("token")}`
+                }
+            }
 
+        )
+
+        this.selectMerchant = response2.data
     },
     data() {
         return {
@@ -108,6 +137,8 @@ export default {
             date: "",
             time: "",
             username: "",
+            dateccc: "",
+            checkBox: false,
             HeaderItems: [
                 { text: '#', value: 'index' },
                 { title: 'الوصف', value: 'des' },
@@ -117,6 +148,9 @@ export default {
             TableItems: [
             ],
             operations: [],
+            selectMerchant: [],
+            selectedMerchant: "",
+            snackbarShow: false,
             items: [
                 { value: 1, title: "دخل" },
                 { value: 2, title: "خرج" }
@@ -136,10 +170,10 @@ export default {
                 .then(async valid => {
                     if (valid.valid == true) {
                         this.TableItems.push({ des: this.descriptionSubmit, amount: Number(this.price), type: this.OperationSubmit, time: this.time })
-                        console.log(`operation type: ${this.OperationSubmit}: text: ${this.descriptionSubmit}, price: ${Number(this.price)} `);
+
                         let checkDate = new Date();
                         let date = checkDate.toISOString().split('T')[0];
-                        console.log(localStorage.getItem("token"));
+
 
                         let response = await axios.post(`${this.apiurl}/records`,
                             {
@@ -157,7 +191,24 @@ export default {
                             }
 
                         )
-                        console.log(response);
+                        if (this.checkBox && this.selectedMerchant) {
+                            let response2 = await axios.patch(`${this.apiurl}/account/pay`,
+                                {
+                                    MerchantId: this.selectedMerchant,
+                                    date: date,
+                                    value: this.price
+                                },
+                                {
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'authorization': `${localStorage.getItem("token")}`
+                                    }
+                                }
+                            )
+
+                            this.snackbarShow = true
+                        }
+
 
 
                         this.OperationSubmit = null;
@@ -171,7 +222,6 @@ export default {
         Total() {
             let total = 0;
             for (let i = 0; i < this.TableItems.length; i++) {
-                console.log(this.TableItems[i].type);
 
                 if (this.TableItems[i].type == 1) {
                     total = total + this.TableItems[i].amount;

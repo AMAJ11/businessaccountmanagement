@@ -3,6 +3,9 @@
         <v-row dir="rtl">
             <v-col md="4" sm="10" cols="12" class="py-10">
                 <v-img width="100px" class="mb-6" src="../assets/cab_history_archive_archives_7220.png"></v-img>
+                <h2 class="text-success mb-3" style="">المجموع في هذه الفترة <v-chip
+                        class="mr-4 elevation-2 text-primary">{{
+                            Total }} $ </v-chip></h2>
                 <v-date-input @update:model-value="validateDates" :disabled="ok" placeholder="First Date"
                     v-model="Firstdate" prepend-icon="" append-inner-icon="mdi-calendar-range">
                 </v-date-input>
@@ -47,7 +50,7 @@
                     <template v-slot:item.amount="{ item }">
                         <span :class="item.type == '1' ? 'text-green' : 'text-red'" style="font-size: 18px;">{{
                             item.type == '1' ? `${item.amount}+` : `${item.amount}-`
-                        }}</span>
+                            }}</span>
                     </template>
                     <template v-slot:item.time="{ item }">
                         <v-tooltip text="Tooltip content">
@@ -80,8 +83,8 @@ export default {
             debouncedSearch: null,
             apiurl: process.env.VUE_APP_API_URL,
             submitLoad: false,
-            Firstdate: "",
-            Lastdate: "",
+            Firstdate: null,
+            Lastdate: null,
             errorMessage: "",
             error: "",
             HeaderItems: [
@@ -122,10 +125,13 @@ export default {
             return `${year}-${month}-${day}`
         },
         submit: async function () {
-            if (this.Firstdate != null && this.Lastdate != null) {
+            if (this.Firstdate == null || this.Lastdate == null) {
+                this.errorMessage = "يجب عليك ملءالحقول"
+            }
+            else {
                 if (!this.error) {
-                    console.log("yesss");
                     this.submitLoad = true
+
                     let response = await axios.get(`${this.apiurl}/records?from=${this.formattedDate(this.Firstdate)}&to=${this.formattedDate(this.Lastdate)}`,
                         {
                             headers: {
@@ -135,10 +141,6 @@ export default {
                         }
 
                     )
-                    console.log(response);
-                    // for (let i = 0; i < response.data.length; i++) {
-                    //     this.TableItems.push({ description: response.data[i].description, amount: Number(response.data[i].amount), type: response.data[i].type, time: response.data[i].time, date: response.data[i].date })
-                    // }
                     this.TableItems = response.data
                     if (response.data != null) {
                         this.ok = true
@@ -150,8 +152,6 @@ export default {
                 } else {
                     this.errorMessage = "  لا يمكن أن يكون تاريخ البداية بعد تاريخ النهاية"
                 }
-            } else {
-                this.errorMessage = "يجب عليك ملءالحقول"
             }
         },
         onSearchInput() {
@@ -175,7 +175,6 @@ export default {
                 this.TableItems = response.data
                 return;
             }
-            console.log(this.formattedDate(this.Firstdate), this.formattedDate(this.Lastdate));
 
             this.isLoading = true;
             try {
@@ -190,7 +189,7 @@ export default {
                 if (response.data && Array.isArray(response.data)) {
                     this.searchResults = response.data;
                     this.TableItems = response.data
-                    console.log(this.searchResults);
+
 
                 } else {
                     throw new Error('Invalid response format');
@@ -203,7 +202,7 @@ export default {
                         }
 
                     )
-                    console.log(response);
+
                     // for (let i = 0; i < response.data.length; i++) {
                     //     this.TableItems.push({ description: response.data[i].description, amount: Number(response.data[i].amount), type: response.data[i].type, time: response.data[i].time, date: response.data[i].date })
                     // }
@@ -228,7 +227,7 @@ export default {
                     }
 
                 )
-                console.log(response);
+
                 // for (let i = 0; i < response.data.length; i++) {
                 //     this.TableItems.push({ description: response.data[i].description, amount: Number(response.data[i].amount), type: response.data[i].type, time: response.data[i].time, date: response.data[i].date })
                 // }
@@ -239,7 +238,18 @@ export default {
         },
     },
     computed: {
+        Total() {
+            let total = 0;
+            for (let i = 0; i < this.TableItems.length; i++) {
 
+                if (this.TableItems[i].type == 1) {
+                    total = total + this.TableItems[i].amount;
+                } else {
+                    total = total - this.TableItems[i].amount
+                }
+            }
+            return total;
+        }
     }
 
 }
