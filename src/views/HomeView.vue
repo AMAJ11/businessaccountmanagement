@@ -57,12 +57,13 @@
                         }}</span>
                     </template>
                     <template v-slot:item.time="{ item }">
-                        <v-tooltip text="Tooltip content">
+                        <v-tooltip text="Tooltip content" class="hidden-sm-and-down">
                             {{ item.time }}
-                            <template #activator="{ props }">
-                                <v-icon v-bind="props">mdi-clock</v-icon>
+                            <template #activator="{ props }" class="hidden-sm-and-down">
+                                <v-icon v-bind="props" class="hidden-sm-and-down">mdi-clock</v-icon>
                             </template>
                         </v-tooltip>
+                       <span class="hidden-sm-and-up">{{ item.time }}</span> 
                     </template>
 
                     <!-- <template v-slot:body.append>

@@ -50,7 +50,7 @@
                     <template v-slot:item.amount="{ item }">
                         <span :class="item.type == '1' ? 'text-green' : 'text-red'" style="font-size: 18px;">{{
                             item.type == '1' ? `${item.amount}+` : `${item.amount}-`
-                            }}</span>
+                        }}</span>
                     </template>
                     <template v-slot:item.time="{ item }">
                         <v-tooltip text="Tooltip content">
@@ -59,6 +59,7 @@
                                 <v-icon v-bind="props">mdi-clock</v-icon>
                             </template>
                         </v-tooltip>
+                        <span> {{ formattedDate(item.date) + " ," }} {{ item.time }}</span>
                     </template>
                 </v-data-table>
 
