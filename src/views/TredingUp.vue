@@ -172,6 +172,7 @@ export default {
                         }
                         )
                         this.getData();
+                         this.SubmitLoad= false
 
                     }
                 })
